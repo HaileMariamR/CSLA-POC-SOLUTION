@@ -1,0 +1,97 @@
+﻿@page "/editemploye"
+@page "/editemploye/{id:int}"
+@using Csla;
+@using Csla.Security;
+@using Microsoft.AspNetCore.Authorization
+@using Business_Logic
+@using System.Net.Http.Headers;
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
+@inject Csla.IDataPortal<EmployeeEdit> employeEditPortal
+@inject Csla.Blazor.ViewModel<EmployeeEdit> vm
+@inject NavigationManager NavigationManager
+
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "Admin")]
+
+
+<p><a href="employee">List of Employees</a></p>
+
+<h1>Delete Employee</h1>
+
+
+@if (isDeleteError)
+{
+    <div class="alert alert-sucess mt-2" style="width:400px">@deleteErrorMessage</div>
+}
+
+
+@if (vm.Model == null)
+{
+  <p>Loading Employe...</p>
+}
+else
+{
+  <table class="table">
+    <tbody>
+     
+      <tr>
+          <td>Name</td>
+          <td>@vm.Model.Name</td>
+      </tr>
+      <tr>
+        <td>Hire Date</td>
+        <td>@vm.Model.HireDate</td>
+      </tr>
+      <tr>
+        <td>Salary</td>
+        <td>@vm.Model.Salary</td>
+      </tr>
+
+      </tbody>
+     
+  </table>
+    <button class="btn btn-danger" @onclick="DeleteEmploye">Delete Person </button>
+}
+
+@code {
+
+    private bool isDeleteError { get; set; }
+    private string? deleteErrorMessage { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await vm.RefreshAsync(() => employeEditPortal.FetchAsync(Id));
+    }
+    public async Task  DeleteEmploye()
+    {
+
+        var claims = new Claim[]
+                  {
+                         new Claim(ClaimTypes.Name, "Test User"),
+                         new Claim(ClaimTypes.Role, "user"),
+                 };
+
+        var identity = new ClaimsIdentity(claims, "Test", ClaimTypes.Name, ClaimTypes.Role);
+        ((Csla.Blazor.Authentication.CslaAuthenticationStateProvider)AuthenticationStateProvider).SetPrincipal(new System.Security.Claims.ClaimsPrincipal(identity));
+
+        try
+        {
+            await employeEditPortal.DeleteAsync(Id);
+
+        }
+        catch (Exception ex)
+        {
+            isDeleteError = true;
+            deleteErrorMessage = $"You do not have permission to delete this business object. Admin privileges are required to perform this action";
+        }
+
+    }
+
+
+}

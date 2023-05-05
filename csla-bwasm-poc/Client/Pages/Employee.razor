@@ -1,0 +1,125 @@
+﻿@page "/employee"
+
+@using Csla.Configuration;
+@using Csla;
+@using Csla.Security;
+@using Csla.Blazor.Authentication;
+@using System.Security.Claims
+@using Csla.Blazor
+@using Business_Logic
+@using Microsoft.AspNetCore.Components.Authorization
+@using Csla.DataPortalClient;
+@using cslabwasmsecurity;
+@using Csla.Channels.Http;
+@using System.Net.Http.Headers;
+@using cslabwasmpoc.Client;
+
+@using Csla.Rules
+
+@implements IDisposable
+
+
+@inject cslabwasmpoc.Client.ILocalStorage LocalStorage
+
+
+@inject HttpClientInterceptorService httpClientInterceptorService;
+
+@inject Csla.IDataPortal<EmployeList> employeListPortal
+@inject Csla.Blazor.ViewModel<EmployeList> vm
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject HttpClient _httpClient;
+
+
+
+
+@if (vm.Model == null)
+{
+    <p>Loading List...</p>
+}
+else
+{
+    <h1>Employee</h1>
+
+    <div>
+    
+    </div>
+   
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            @foreach (var item in vm.Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+               
+                    <td>@item.HireDate</td>
+                
+                    <AuthorizeView Roles="admin">
+                        <Authorized>
+                            <td>@item.Salary</td>
+                        </Authorized>
+                        <NotAuthorized>
+                            <td>NOT ALLOWED</td>
+                        </NotAuthorized>
+                    </AuthorizeView>    
+                   
+                
+                    <AuthorizeView Roles="admin">
+                          <Authorized>
+                            <td><a href="editemploye/@item.Id">Delete</a></td>
+                        </Authorized>
+                        <NotAuthorized>
+                            <td>NOT ALLOWED TO Delete</td>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                  
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private string? userRole;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        httpClientInterceptorService.RegisterEvent();
+
+        var role =  await LocalStorage.GetStringAsync("role");
+        var claims = new Claim[]    
+                      {
+                         new Claim(ClaimTypes.Name, "Test User"),
+                         new Claim(ClaimTypes.Role, role ?? ""),
+                     };
+
+        var identity = new ClaimsIdentity(claims, "Test", ClaimTypes.Name, ClaimTypes.Role);
+        ((Csla.Blazor.Authentication.CslaAuthenticationStateProvider)AuthenticationStateProvider).SetPrincipal(new System.Security.Claims.ClaimsPrincipal(identity));
+        StateHasChanged();
+
+    }
+
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        
+        await vm.RefreshAsync(() => employeListPortal.FetchAsync());
+        var temp = vm.Exception;
+
+    }
+
+    public void Dispose() => httpClientInterceptorService.DisposeEvent();
+}

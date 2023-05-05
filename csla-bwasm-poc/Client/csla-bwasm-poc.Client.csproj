@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\CustomHttpProxy.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Csla" Version="6.2.2" />
+    <PackageReference Include="Csla.Blazor.WebAssembly" Version="6.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.3" PrivateAssets="all" />
+    <PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Business-Logic\Business-Logic.csproj" />
+    <ProjectReference Include="..\Shared\csla-bwasm-poc.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

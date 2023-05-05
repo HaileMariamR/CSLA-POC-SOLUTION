@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>csla-bwasm-poc.Server</RootNamespace>
+    <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Csla" Version="6.2.2" />
+    <PackageReference Include="Csla.AspNetCore" Version="6.2.2" />
+    <PackageReference Include="Csla.Blazor" Version="6.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Business-Logic\Business-Logic.csproj" />
+    <ProjectReference Include="..\..\Data-Layer\Data-Layer.csproj" />
+    <ProjectReference Include="..\Client\csla-bwasm-poc.Client.csproj" />
+    <ProjectReference Include="..\Shared\csla-bwasm-poc.Shared.csproj" />
+  </ItemGroup>
+
+
+</Project>
